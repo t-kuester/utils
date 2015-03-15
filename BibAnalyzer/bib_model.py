@@ -1,6 +1,15 @@
 # -*- coding: utf8 -*-
 
+"""Domain model for Bibliography Analyzer Utility.
+by Tobias Küster, 2015
+"""
+
 class BibItem:
+	"""Class representing a bibliography item.
+	
+	This is intentionally held simple, with just the very basic attributes, such
+	as title of the publication, a list of authors, and the year.
+	"""
 	
 	def __init__(self, authors, title, year):
 		self.authors = tuple(authors)
@@ -8,8 +17,7 @@ class BibItem:
 		self.year = year
 		
 	def __hash__(self):
-		res = 1
-		res *= 17 + hash(self.authors)
+		return 17 + hash(self.authors)
 		res *= 23 + hash(self.title)
 		res *= 31 + hash(self.year)
 		return res
@@ -25,11 +33,3 @@ class BibItem:
 		
 	def __repr__(self):
 		return "BibItem(authors=%r, title=%r, year=%r)" % (self.authors, self.title, self.year)
-
-
-if __name__ == "__main__":
-	b = BibItem(["Tobias Küster", "Marco Lützenberger"], "Bla bla titel", 2015)
-	print b
-	print repr(b)
-	print eval(repr(b)) == b
-	
