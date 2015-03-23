@@ -9,8 +9,11 @@ words on the screen.
 Not really sure how well this works. Newer really tried on a longer text...
 """
 
-import Tkinter, ScrolledText, tkFont
-import time, math
+import Tkinter
+import ScrolledText
+import tkFont
+import time
+import math
 
 
 class QuickReaderFrame(Tkinter.Frame):
@@ -125,19 +128,22 @@ def get_display_time(word):
 
 # start application
 if __name__ == '__main__':
-	import optparse
+	def main():
+		"""Parse command line options and start application.
+		"""
+		import optparse
 
-	# parse and check command line options
-	parser = optparse.OptionParser("quickreader.py [File]")
-	(options, args) = parser.parse_args()
+		# parse and check command line options
+		parser = optparse.OptionParser("quickreader.py [File]")
+		(_, args) = parser.parse_args()
 
-	# read filename from command line and read file content
-	text = None
-	if len(args) >= 1:
-		fname = args[0]
-		with open(fname, 'r') as f:
-			text = f.read()
+		# read filename from command line and read file content
+		text = None
+		if len(args) >= 1:
+			fname = args[0]
+			with open(fname, 'r') as f:
+				text = f.read()
 
-	# start application
-	app = QuickReaderFrame(text=text)
-	app.mainloop()
+		# start application
+		QuickReaderFrame(text=text).mainloop()
+	main()
