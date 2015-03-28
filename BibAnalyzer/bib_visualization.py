@@ -27,4 +27,4 @@ def create_authors_graph(bibitems, call_graphviz=False):
 if __name__ == "__main__":
 	import bib_parser
 	items = bib_parser.parse_bib_from_bibtex("literature.bib")
-	create_authors_graph(items)
+	create_authors_graph(items, True)

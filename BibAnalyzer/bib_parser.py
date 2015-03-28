@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 
-"""Module for parsing bibliography files in different formats.
+"""Parser module for Bibliography Analyzer Utility.
 by Tobias Küster, 2015
 
 - parse bib items from simple lists

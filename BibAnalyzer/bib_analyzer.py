@@ -6,6 +6,8 @@ by Tobias Küster, 2015
 - get co-author relationships
 - get frequently used title words and n-grams
 - get number of papers per author
+- get authors writing about a certain topic
+- TODO get frequent topics per author
 """
 
 from itertools import combinations
@@ -14,13 +16,15 @@ import Stemmer
 import re
 
 # some words that are not interesting for common title words, n-grams, etc.
-BAD_WORDS = set(["a", "at", "the", "with", "and", "of", "in", "for", "from",
-				 "to", "on", "an", "when", "using", "how", "under", "as", 
-				 "new", "be", "or", "via", "no", "by", "over", "can", "here",
-				 "about" "what", "who", "why", "into", "do", "towards", "between",
-				 "is", "are"])
+BAD_WORDS = set(['a', 'about', 'an', 'and', 'are', 'as', 'at', 'be', 'between', 
+                 'by', 'can', 'do', 'for', 'from', 'here', 'how', 'in', 'into', 
+                 'is', 'new', 'no', 'of', 'on', 'or', 'over', 'the', 'to', 
+                 'towards', 'under', 'using', 'via', 'what', 'when', 'who', 
+                 'why', 'with']
+)
 
 # regular expression for finding words in titles
+#TODO improve this regex
 WORDS_PATTERN = re.compile(r"[a-z0-9-_]*[a-z][a-z0-9-_]*")
 
 # the stemmer used for normalizing the words
@@ -55,7 +59,17 @@ def get_title_ngrams(bibitems, n, min_num=1, stemming=False):
 		for k in range(len(proper_title_words) - n):
 			ngrams[" ".join(proper_title_words[k:k+n])] += 1
 	return dict((key, val) for key, val in ngrams.iteritems() if val >= min_num)
-	
+
+def get_authors_for_topic(bibitems, topic):
+	"""Get all authors writing about a certain topic.
+	"""
+	authors = set()
+	for item in bibitems:
+		#TODO use stemming, like above, maybe move to separate function
+		title_words = WORDS_PATTERN.findall(item.title.lower())
+		if topic in title_words:
+			authors.update(item.authors)
+	return authors
 
 # testing
 if __name__ == "__main__":
@@ -65,3 +79,4 @@ if __name__ == "__main__":
 	pprint(get_coauthors(items))
 	pprint(sorted(get_title_ngrams(items, 1, 1).items(), key=lambda x: x[1]))
 	pprint(get_papers_per_author(items, 5))
+	pprint(get_authors_for_topic(items, "petri"))
