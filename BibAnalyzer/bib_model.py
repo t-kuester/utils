@@ -2,6 +2,8 @@
 
 """Domain model for Bibliography Analyzer Utility.
 by Tobias Küster, 2015
+
+- simple representation for bibliography item
 """
 
 class BibItem:

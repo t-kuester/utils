@@ -2,6 +2,9 @@
 
 """Module for parsing bibliography files in different formats.
 by Tobias Küster, 2015
+
+- parse bib items from simple lists
+- parse bib items from bibtex files
 """
 
 import re
