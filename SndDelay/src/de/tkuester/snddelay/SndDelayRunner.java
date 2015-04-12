@@ -6,20 +6,29 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
 
-public class SndDelayRunner implements Runnable {
+/**
+ * TODO Javadocs
+ *
+ * @author tkuester
+ */
+public class SndDelayRunner extends Thread {
 
 	private TargetDataLine microphone;
 	private SourceDataLine loudspeaker;
 	
-	public int delay = 1000;
+	private final int delay;
 	
-	public SndDelayRunner() throws LineUnavailableException {
+	public SndDelayRunner(int delay) throws LineUnavailableException {
+		this.delay = delay;
+		
 		// initialize microphone and speaker
-		AudioFormat format = new AudioFormat(8000.0f, 32, 1, true, true);
-		microphone = AudioSystem.getTargetDataLine(format);
-		loudspeaker = AudioSystem.getSourceDataLine(format);
-		microphone.open(format);
-		loudspeaker.open(format);
+		AudioFormat inFormat = new AudioFormat(8000.0f, 32, 1, true, true);
+		microphone = AudioSystem.getTargetDataLine(inFormat);
+		microphone.open(inFormat);
+
+		AudioFormat outFormat = new AudioFormat(8000.0f, 32, 1, true, true);
+		loudspeaker = AudioSystem.getSourceDataLine(outFormat);
+		loudspeaker.open(outFormat);
 	}
 	
 	public void run() {
@@ -33,7 +42,8 @@ public class SndDelayRunner implements Runnable {
 		// start delay loop
 		microphone.start();
 		loudspeaker.start();
-		while (delay != -1) {
+		
+		while (! isInterrupted()) {
 			// read chunk from microphone
 			int bytesToRead = Math.min(buffer.length - micPosition, chunkSIze);
 			int bytesFromMic = microphone.read(buffer, micPosition, bytesToRead);
