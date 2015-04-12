@@ -14,6 +14,11 @@ import javax.sound.sampled.Mixer;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
 
+/**
+ * "Sandbox" for playing around and trying stuff in Java sound API.
+ * 
+ * @author tkuester
+ */
 public class Sandbox {
 
 	final static Random RANDOM = new Random();
