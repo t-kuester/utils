@@ -8,8 +8,7 @@ package de.tkuester.snddelay;
 public class Headless {
 	
 	public static void main(String[] args) throws Exception {
-		SndDelayRunner runner = new SndDelayRunner(2000);
-		runner.start();
+		new SndDelayRunner(1000, 1f).start();
 	}
 	
 }

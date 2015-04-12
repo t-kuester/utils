@@ -30,7 +30,7 @@ public class SndDelayUI extends JFrame {
 	private final JButton button;
 	
 	/** thread running the sound delay runnable */
-	private Thread runner = null;
+	private SndDelayRunner runner = null;
 
 	/**
 	 * Initialize sound delay UI.
@@ -72,7 +72,8 @@ public class SndDelayUI extends JFrame {
 		try {
 			// start thread
 			int delay = this.delayPanel.getValue();
-			this.runner = new SndDelayRunner(delay);
+			float pitch = this.pitchPanel.getValue() / 100.f;
+			this.runner = new SndDelayRunner(delay, pitch);
 			this.runner.start();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -90,7 +91,7 @@ public class SndDelayUI extends JFrame {
 		this.button.setText("Start");
 		
 		// stop thread
-		this.runner.interrupt();
+		this.runner.stopRunning();
 		this.runner = null;
 	}
 	
