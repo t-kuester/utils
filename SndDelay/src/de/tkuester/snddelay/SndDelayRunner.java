@@ -17,9 +17,15 @@ import javax.sound.sampled.TargetDataLine;
  */
 public class SndDelayRunner extends Thread {
 
-	public static final float SAMPLE_RATE = 8000.0f;
+	/** sample rate. 8 kHz should be enough for speech; CD-Audio uses 44.1 kHz. Lower 
+	 * probably better for post-processing (FFT), but unless used, higher is better*/ 
+	public static final float SAMPLE_RATE = 44_100.0f;
+	
+	/** bits per sample */
 	public static final int SAMPLE_BITS = 32;
-	public static final int BUFFER_SIZE = 100_000;
+	
+	/** buffer size */
+	public static final int BUFFER_SIZE = 1_000_000;
 
 	/** audio data line representing the microphone */
 	private TargetDataLine microphone;
@@ -61,11 +67,24 @@ public class SndDelayRunner extends Thread {
 	public void run() {
 		// set up ring buffer and other variables
 		byte[] buffer = new byte[BUFFER_SIZE];
-		int chunkSIze = microphone.getBufferSize() / 2;
+
+		// determine chunk size
+		double bytesPerSecond = (int) (SAMPLE_BITS * SAMPLE_RATE) / 8.;
+//		int chunkSIze = (int) Math.min(microphone.getBufferSize() / 2, 
+//				                       delay * bytesPerSecond / 1000.);
+		int chunkSIze = microphone.getBufferSize() / 4; 
+		// make chunk size integral number of frames
+		int frameSize = SAMPLE_BITS / 8;
+		chunkSIze = (chunkSIze / frameSize) * frameSize;
+		
 		int micPosition = 0;
 		int spkPosition = 0;
 		long start = System.currentTimeMillis();
-
+		long last = start;
+		
+		System.out.println(chunkSIze);
+		System.out.println((SAMPLE_BITS * SAMPLE_RATE) / 8000. * delay);
+		
 		// start delay loop
 		microphone.start();
 		loudspeaker.start();
@@ -75,6 +94,8 @@ public class SndDelayRunner extends Thread {
 			int bytesToRead = Math.min(buffer.length - micPosition, chunkSIze);
 			int bytesFromMic = microphone.read(buffer, micPosition, bytesToRead);
 			micPosition = (micPosition + bytesFromMic) % buffer.length;
+			
+			System.out.println(System.currentTimeMillis() - last);
 			System.out.println("mic >>> " + bytesFromMic + "/" + chunkSIze + " \t " + micPosition);
 
 			if (System.currentTimeMillis() > start + delay) {
@@ -83,7 +104,10 @@ public class SndDelayRunner extends Thread {
 				int bytesToSpk = loudspeaker.write(buffer, spkPosition, bytesToWrite);
 				spkPosition = (spkPosition + bytesToSpk) % buffer.length;
 				System.out.println("spk <<< " + bytesToSpk+ "/" + chunkSIze + " \t " + spkPosition);
+				
+				System.out.println((micPosition - spkPosition) / (float) bytesPerSecond);
 			}
+			last = System.currentTimeMillis();
 		}
 		
 		// stop microphone and speaker

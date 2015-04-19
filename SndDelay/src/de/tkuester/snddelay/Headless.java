@@ -9,6 +9,7 @@ public class Headless {
 	
 	public static void main(String[] args) throws Exception {
 		new SndDelayRunner(1000, 1f).start();
+//		new NoiseRunner().start();
 	}
 	
 }
