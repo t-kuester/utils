@@ -1,4 +1,8 @@
 
+import json
+import time
+
+
 class Interval:
 	DAY = "DAY"
 	WEEK = "WEEK"
@@ -14,33 +18,43 @@ class Activity:
 		self.interval = interval
 		self.required = required
 		self.history = history or []
-		self.counts = None
 	
 	def __repr__(self):
 		return "Activity(name=%r, description=%r, interval=%r, required=%r, history=%r)" \
 				% (self.name, self.description, self.interval, self.required, self.history)
 	
+	def log_now(self):
+		t = time.time()
+		print "logged", time.ctime(t)
+		self.history.append(t)
+	
 	def get_counts(self):
-		if self.counts is None:
-			pass #TODO populate counts
-			# TODO timestamps in dates umwandeln; mit groupby nach interval
-			# gruppieren, laenge bestimmen und in liste eintragen 
-			# --> vorsicht mit leeren intervallen! nicht einfach vergessen
-		return self.counts
+		pass
+		# TODO timestamps in dates umwandeln; mit groupby nach interval
+		# gruppieren, laenge bestimmen und in liste eintragen 
+		# --> vorsicht mit leeren intervallen! nicht einfach vergessen
 
 
 def load_activities(filename):
-	pass
-	# TODO use JSON to losd list of activities from file
+	with open(filename) as f:
+		lst = json.load(f)
+		return [Activity(**d) for d in lst]
 
 
 def store_activities(activities, filename):
-	pass
-	# TODO use JSON to store list of activities to file
-
+	with open(filename, "w") as f:
+		lst = [act.__dict__ for act in activities]
+		json.dump(lst, f)
+	
 
 if __name__ == "__main__":
 	
 	a1 = Activity("a1", "test activity 1", Interval.WEEK, 2)
-	print a1	
+	a2 = Activity("a2", "test activity 2", Interval.DAY, 1)
+	print a1
+	print a2
 	
+	store_activities([a1, a2], "test.json")
+	a3, a4 = load_activities("test.json")
+	print a3
+	print a4
