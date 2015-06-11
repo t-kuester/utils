@@ -1,6 +1,21 @@
 # utils
 Some small utility programs that might be useful.
 
+Activity Logger
+---------------
+This program is supposed to show a simple UI for managing different activities.
+This is a sort of 'gamification' for tasks that you want to do regularly, but
+often fail to do due to lazyness or whatever. You can add activities and how
+often you want to perform them, like 'work on my thesis at least once a day', 
+or 'go to the dentist at least twice a year', and 'log in' whenever you actually
+performed that activity. When it's done, this program will not only keep track
+of when you performed and when you slacked, but also provide some statistict, 
+and maybe also points and badges and other gamification stull to help you keep 
+going.
+
+*very early version*
+
+
 Bib Analyzer
 ------------
 When this is done, its supposed to be a small utility program or library for
