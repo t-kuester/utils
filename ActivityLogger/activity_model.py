@@ -42,13 +42,20 @@ class Activity:
 		self.history.append(t)
 
 	def format_interval(self, date):
+		""" Format date so that all dates in the same interval are equal.
+		"""
 		return date.strftime(FORMATS[self.interval])
 
 	def group_intervals(self):
+		""" Group logged times from history into intervals.
+		"""
 		get_interval = lambda t: self.format_interval(datetime.date.fromtimestamp(t))
 		return [(k, map(time.ctime, g)) for k, g in itertools.groupby(self.history, get_interval)]
 
 	def all_intervals(self):
+		""" Create all the intervals from creation time up until today.
+		"""
+		# TODO any more elegant / efficient way of doing this?
 		all_intervals = set()
 		t = datetime.date.fromtimestamp(self.created)
 		tomorrow = datetime.date.today() + datetime.timedelta(days=1)
@@ -80,7 +87,7 @@ def store_activities(activities, filename):
 		lst = [act.__dict__ for act in activities]
 		json.dump(lst, f)
 	
-
+# TODO add some function to merge activities from different json files
 
 if __name__ == "__main__":
 	created = time.time() - 2000000
