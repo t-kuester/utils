@@ -1,41 +1,41 @@
 from activity_model import *
-from Tkinter import *
-import tkFont
+import tkinter
+import tkinter.font as font
 
 
-class ActivityFrame(Frame):
+class ActivityFrame(tkinter.Frame):
 	""" Simple Tkinter Frame for displaying and interacting with activity list.
 	"""
 	
 	def __init__(self, activities, master=None):
-		Frame.__init__(self, master)
+		tkinter.Frame.__init__(self, master)
 		self.activities = activities
 		for act in self.activities:
 			panel = ActivityPanel(self, act)
-			panel.pack(side=TOP)
+			panel.pack(side=tkinter.TOP)
 		self.pack()
 		self.bind_all("<KeyPress-q>", lambda e: self.quit())
 
 
-class ActivityPanel(Canvas):
+class ActivityPanel(tkinter.Canvas):
 	""" Panel for showing, editing and logging an individual activity.
 	"""
 
 	def __init__(self, parent, activity):
-		Canvas.__init__(self, parent)
+		tkinter.Canvas.__init__(self, parent)
 		self.activity = activity
 		
-		self.canvas = Canvas(self, width=200, height=50)
-		self.canvas.pack(side=LEFT)
+		self.canvas = tkinter.Canvas(self, width=200, height=50)
+		self.canvas.pack(side=tkinter.LEFT)
 		
 		#TODO button 'stats'
 		#TODO button 'edit'
 		
-		self.log_button = Button(self, text="LOG", relief=FLAT, command=self.log_now)
-		self.log_button.pack(side=RIGHT)
+		self.log_button = tkinter.Button(self, text="LOG", relief=tkinter.FLAT, command=self.log_now)
+		self.log_button.pack(side=tkinter.RIGHT)
 		
-		self.font_name = tkFont.Font(family="Helvetica", size=12)
-		self.font_desc = tkFont.Font(family="Helvetica", size=8)
+		self.font_name = font.Font(family="Helvetica", size=12)
+		self.font_desc = font.Font(family="Helvetica", size=8)
 		
 		self.update_visuals()
 		
@@ -43,9 +43,9 @@ class ActivityPanel(Canvas):
 		""" Update the information displayed on the canvas.
 		"""
 		self.canvas.delete("all")
-		self.canvas.create_text(2, 2, text=self.activity.name, font=self.font_name, anchor=NW)
-		self.canvas.create_text(200, 2, text="%d/%s" % (self.activity.required, self.activity.interval.title()), font=self.font_desc, anchor=NE)
-		self.canvas.create_text(2, 20, text=self.activity.description, font=self.font_desc, anchor=NW)
+		self.canvas.create_text(2, 2, text=self.activity.name, font=self.font_name, anchor=tkinter.NW)
+		self.canvas.create_text(200, 2, text="%d/%s" % (self.activity.required, self.activity.interval.title()), font=self.font_desc, anchor=tkinter.NE)
+		self.canvas.create_text(2, 20, text=self.activity.description, font=self.font_desc, anchor=tkinter.NW)
 		counts = self.activity.get_counts()
 		for i, c in enumerate(reversed(counts[-20:]), 1):
 			x = 200 - i * 10
@@ -62,7 +62,6 @@ class ActivityPanel(Canvas):
 class EditActivityDialog:
 	""" Dialog for editing the details of an activity.
 	"""
-	
 	# TODO
 	pass
 

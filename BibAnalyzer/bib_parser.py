@@ -36,8 +36,9 @@ def make_parse_func(authors_regex, title_regex, year_regex, author_sep=","):
 			year = extract(year_regex)
 			author_list = [author.strip() for author in authors.split(author_sep)]
 			return BibItem(author_list, title, year)
-		except:
-			print "WARNING: Could not parse item: \n" + item
+		except Exception as e:
+			print("WARNING: Could not parse item: \n" + item)
+			print("Error was: ", e)
 			
 	return func
 
@@ -81,4 +82,4 @@ if __name__ == "__main__":
 	# items = parse_bib_from_list("AAMAS 2013.txt")
 	items = parse_bib_from_bibtex("literature.bib")
 	for item in items:
-		print item
+		print(item)

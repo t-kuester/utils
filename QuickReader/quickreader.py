@@ -9,14 +9,14 @@ words on the screen.
 Not really sure how well this works. Newer really tried on a longer text...
 """
 
-import Tkinter
-import ScrolledText
-import tkFont
+import tkinter
+import tkinter.scrolledtext
+import tkinter.font
 import time
 import math
 
 
-class QuickReaderFrame(Tkinter.Frame):
+class QuickReaderFrame(tkinter.Frame):
 	"""QuickReader Frame.
 	
 	This frame consists of a large text area for copying text into (can also be
@@ -28,28 +28,28 @@ class QuickReaderFrame(Tkinter.Frame):
 	def __init__(self, master=None, text=None):
 		"""Create instance of QuickReaderFrame displaying the given text.
 		"""
-		Tkinter.Frame.__init__(self, master)
+		tkinter.Frame.__init__(self, master)
 		self.master.title('Quick Reader')
 		self.bind_all('<Control-q>', quit)
 		self.grid()
 
 		# Label showing the current word
-		font = tkFont.Font(family="Arial", size="24")
-		self.label = Tkinter.Label(self, font=font)
+		font = tkinter.font.Font(family="Arial", size="24")
+		self.label = tkinter.Label(self, font=font)
 		self.label.grid(row=1, column=1, rowspan=2, sticky="NSEW")
 
 		# Start Button
-		self.button_start = Tkinter.Button(self, text='Scan!', command=self.toggle_scan)
+		self.button_start = tkinter.Button(self, text='Scan!', command=self.toggle_scan)
 		self.button_start.grid(row=1, column=2, sticky="E")
 		self.do_scan = False
 
 		# Speed Scale
-		self.speed = Tkinter.Scale(self, label='Speed', orient='horizontal', from_=1, to=10)
+		self.speed = tkinter.Scale(self, label='Speed', orient='horizontal', from_=1, to=10)
 		self.speed.grid(row=2, column=2, sticky="E")
 		self.speed.set(5)
 
 		# Text Field
-		self.textfield = ScrolledText.ScrolledText(self, wrap=Tkinter.WORD, bg="white")
+		self.textfield = tkinter.scrolledtext.ScrolledText(self, wrap=tkinter.WORD, bg="white")
 		self.textfield.grid(row=3, column=1, columnspan=2)
 		if text:
 			self.textfield.insert("0.0", text)
@@ -72,7 +72,7 @@ class QuickReaderFrame(Tkinter.Frame):
 		try:
 			text = self.textfield.get("sel.first", "sel.last")
 			first = "sel.first"
-		except Tkinter.TclError:
+		except tkinter.TclError:
 			text = self.textfield.get("0.0", "end")
 			first = "0.0"
 		words = text.split()
@@ -107,7 +107,7 @@ class QuickReaderFrame(Tkinter.Frame):
 
 		# remove tracking mark
 		self.textfield.tag_delete("current")
-		print "Read %d words in %f seconds (~%d WpM)" % (i, s, i*60/s)
+		print("Read %d words in %f seconds (~%d WpM)" % (i, s, i*60/s))
 
 	
 def get_display_time(word):
@@ -122,7 +122,7 @@ def get_display_time(word):
 		t *= 1.5
 	if word[-1] == ",":	
 		t *= 1.25
-	print "%10f %s" % (t, word)
+	print("%10f %s" % (t, word))
 	return t
 
 

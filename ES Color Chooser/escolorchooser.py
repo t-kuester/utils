@@ -14,12 +14,12 @@ Usage:
 - repeat until desired colour appears
 """
 
-import Tkinter
-import tkColorChooser
+import tkinter
+import tkinter.colorchooser
 import random
 import itertools
 
-class ESColorChooserFrame(Tkinter.Frame):
+class ESColorChooserFrame(tkinter.Frame):
 	"""Application Frame for ES Color Chooser
 
 	The Frame consists mainly of a matrix of colored panels. By clicking on
@@ -30,39 +30,39 @@ class ESColorChooserFrame(Tkinter.Frame):
 	def __init__(self, master=None):
 		"""Create Color Chooser Application Frame.
 		"""
-		Tkinter.Frame.__init__(self, master)
+		tkinter.Frame.__init__(self, master)
 		self.master.title('ES Color Chooser')
 		self.grid()
 
 		# create central block of color samples
-		self.labels = [[ None for _ in range(3)] for _ in range(3)]
+		self.labels = [[None for _ in range(3)] for _ in range(3)]
 		for (col, row) in itertools.product(range(3), range(3)):
-			label = Tkinter.Label(self, width=20, height=10, bg='#FFFFFF')
+			label = tkinter.Label(self, width=20, height=10, bg='#FFFFFF')
 			label.bind('<ButtonRelease-1>', self.clicked)
 			label.grid(column=col, row=row, padx=1, pady=1)
 			self.labels[row][col] = label
 		self.center = self.labels[1][1]
 
 		# create side pane with buttons and history
-		side = Tkinter.Frame(self)
+		side = tkinter.Frame(self)
 		side.grid(row=0, column=3, rowspan=3)
-		Tkinter.Button(side, text='Select new Color', command=self.select_color).pack(side='top')
-		self.sigma = Tkinter.Scale(side, label='Sigma', orient='horizontal', from_=1, to=25)
+		tkinter.Button(side, text='Select new Color', command=self.select_color).pack(side='top')
+		self.sigma = tkinter.Scale(side, label='Sigma', orient='horizontal', from_=1, to=25)
 		self.sigma.pack(side='top')
 		self.sigma.set(10)
-		Tkinter.Label(side, text='Current color').pack(side='top')
-		self.current = Tkinter.StringVar()
-		current = Tkinter.Entry(side, justify='center', textvariable=self.current)
+		tkinter.Label(side, text='Current color').pack(side='top')
+		self.current = tkinter.StringVar()
+		current = tkinter.Entry(side, justify='center', textvariable=self.current)
 		current.pack(side='top')
-		Tkinter.Label(side, text='History').pack(side='top')
-		self.history = Tkinter.Listbox(side, height='16', bg='white', activestyle='dotbox')
+		tkinter.Label(side, text='History').pack(side='top')
+		self.history = tkinter.Listbox(side, height='16', bg='white', activestyle='dotbox')
 		self.history.bind('<ButtonRelease-1>', self.clicked)
 		self.history.pack(side='top')
 
 	def select_color(self):
 		"""Ask for new color and assign it to the central panel.
 		"""
-		result = tkColorChooser.askcolor(self.center['bg'])
+		result = tkinter.colorchooser.askcolor(self.center['bg'])
 		if result:
 			# 2nd part of result is the color object
 			self.center['bg'] = result[1]

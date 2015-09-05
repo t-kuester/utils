@@ -38,7 +38,7 @@ class Activity:
 		""" Add the current date and time to the activity's history.
 		"""
 		t = time.time()
-		print "logged", time.ctime(t)
+		print("logged", time.ctime(t))
 		self.history.append(t)
 
 	def format_interval(self, date):
@@ -50,7 +50,7 @@ class Activity:
 		""" Group logged times from history into intervals.
 		"""
 		get_interval = lambda t: self.format_interval(datetime.date.fromtimestamp(t))
-		return [(k, map(time.ctime, g)) for k, g in itertools.groupby(self.history, get_interval)]
+		return [(k, list(map(time.ctime, g))) for k, g in itertools.groupby(self.history, get_interval)]
 
 	def all_intervals(self):
 		""" Create all the intervals from creation time up until today.
@@ -68,7 +68,7 @@ class Activity:
 		""" Calculate how often this activity has been performed in each time
 		interval based on the timestamps from the history.
 		"""
-		groups_map = dict((k, len(g)) for k, g in self.group_intervals())
+		groups_map = {k: len(g) for k, g in self.group_intervals()}
 		return [groups_map.get(i, 0) for i in sorted(self.all_intervals())]
 	
 
@@ -93,16 +93,16 @@ if __name__ == "__main__":
 	created = time.time() - 2000000
 	a1 = Activity("Some activity 1", "Description for activity 1", created, Interval.WEEK, 2)
 	a2 = Activity("Some other activity 2", "Some bla bla about activity 2", created, Interval.DAY, 1)
-	print a1
-	print a2
+	print(a1)
+	print(a2)
 	
 	t = time.time()
 	a1.history.extend(sorted([t - 60 * 60 * 24 * random.randint(1, 100) for i in range(20)]))
 	
 	store_activities([a1, a2], "test.json")
 	a3, a4 = load_activities("test.json")
-	print a3
-	print a4
+	print(a3)
+	print(a4)
 
 	for c in a3.get_counts():
-		print c
+		print(c)

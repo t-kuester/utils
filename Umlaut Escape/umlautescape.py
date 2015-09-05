@@ -35,39 +35,41 @@ LATEX_TABLE = [('ä', '\\"{a}'), ('Ä', '\\"{A}'),
 			   ('ß', '\\ss{}') ]
 TABLES = {'html': HTML_TABLE, 'latex': LATEX_TABLE}
 
+
+def main():
+	"""Parse command line options and run application.
+	"""
+	import optparse, shutil
+
+	# parse and check command line options
+	parser = optparse.OptionParser("umlautescape.py [Options] File")
+	parser.add_option("-m", "--mode", dest="mode", 
+					  help="mode; one from " + str(TABLES.keys()))
+	parser.add_option("-i", "--inverse", dest="inverse", action="store_true",
+					  help="reverse substitution?", default=False)
+	(options, args) = parser.parse_args()
+	if len(args) != 1:
+		parser.error("no file given")
+	if not options.mode:
+		parser.error("no mode given")
+	elif not options.mode in TABLES.keys():
+		parser.error("unknown mode: " + options.mode)
+	
+	# read filename from command line and read file content
+	fname = args[0]
+	with  open(fname, 'r') as in_file:
+		content = in_file.read()
+
+	# create backup copy
+	shutil.copyfile(fname, fname + '.bak')
+
+	# replace umlauts in content
+	content = replace(content, TABLES[options.mode], options.inverse)
+
+	# write file
+	with open(fname, 'w') as out_file:
+		out_file.write(content)
+			
 # Run script from command line
 if __name__ == "__main__":
-	def main():
-		"""Parse command line options and run application.
-		"""
-		import optparse, shutil
-
-		# parse and check command line options
-		parser = optparse.OptionParser("umlautescape.py [Options] File")
-		parser.add_option("-m", "--mode", dest="mode", 
-						  help="mode; one from " + str(TABLES.keys()))
-		parser.add_option("-i", "--inverse", dest="inverse", action="store_true",
-						  help="reverse substitution?", default=False)
-		(options, args) = parser.parse_args()
-		if len(args) != 1:
-			parser.error("no file given")
-		if not options.mode:
-			parser.error("no mode given")
-		elif not options.mode in TABLES.keys():
-			parser.error("unknown mode: " + options.mode)
-		
-		# read filename from command line and read file content
-		fname = args[0]
-		with  open(fname, 'r') as in_file:
-			content = in_file.read()
-
-		# create backup copy
-		shutil.copyfile(fname, fname + '.bak')
-
-		# replace umlauts in content
-		content = replace(content, TABLES[options.mode], options.inverse)
-
-		# write file
-		with open(fname, 'w') as out_file:
-			out_file.write(content)
 	main()

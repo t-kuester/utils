@@ -19,7 +19,7 @@ class BibItem:
 		self.year = year
 		
 	def __hash__(self):
-		return 17 + hash(self.authors)
+		res = 17 + hash(self.authors)
 		res *= 23 + hash(self.title)
 		res *= 31 + hash(self.year)
 		return res
