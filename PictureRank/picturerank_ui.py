@@ -10,6 +10,7 @@ import picturerank
 from PIL import Image, ImageTk
 
 WIDTH, HEIGHT = 400, 400
+DELIMITER = " - "
 
 class PictureRankUI(tkinter.Frame):
 	
@@ -27,8 +28,13 @@ class PictureRankUI(tkinter.Frame):
 		self.label2.grid(row=0, column=1)
 		
 		self.bind_all("<KeyRelease>", self.handle_keys)
+
+		self.ranking = tkinter.Listbox(self, height='25', selectmode='single')
+		self.ranking.bind('<ButtonRelease>', self.from_ranking)
+		self.ranking.grid(row=0, column=2)
 		
-		self.load_images()
+		self.set_random_images()
+		self.update_ranking()
 	
 	def handle_keys(self, event):
 		if event.keysym == "q":
@@ -45,12 +51,28 @@ class PictureRankUI(tkinter.Frame):
 		if self.current:
 			p1, p2 = self.current
 			self.ranker.update_rank(p1, p2, pic)
-		print(pic)
-		print(self.ranker.ranks)
-		self.load_images()
+		self.update_ranking()
+		self.set_random_images()
 		
-	def load_images(self):
+	def update_ranking(self):
+		ranking = self.ranker.get_best()
+		self.ranking.delete(0, len(ranking))
+		self.ranking.insert(0, *("%s%s%s" % (rank, DELIMITER, pic) for pic, rank in ranking))
+		
+	def from_ranking(self, event):
+		p1, p2 = self.current
+		selection = self.ranking.get(self.ranking.nearest(event.y))
+		pic = selection.split(DELIMITER, 1)[1]
+		if event.num == 1:
+			self.set_images(pic, p2)
+		if event.num == 3:
+			self.set_images(p1, pic)
+			
+	def set_random_images(self):
 		p1, p2 = self.ranker.get_random_pair()
+		self.set_images(p1, p2)
+		
+	def set_images(self, p1, p2):
 		self.label1.configure(image=self.load_image(p1))
 		self.label2.configure(image=self.load_image(p2))
 		self.current = p1, p2
@@ -62,7 +84,7 @@ class PictureRankUI(tkinter.Frame):
 			img.thumbnail((WIDTH, HEIGHT))
 			self.images[pic] = ImageTk.PhotoImage(img)
 		return self.images[pic]
-
+		
 	def auto_rotate(self, img):
 		# http://www.lifl.fr/~damien.riquet/auto-rotating-pictures-using-pil.html
 		try:
