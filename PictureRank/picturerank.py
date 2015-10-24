@@ -11,7 +11,8 @@ class PictureRank:
 	
 	def __init__(self, directory):
 		self.directory = directory
-		self.pictures = next(os.walk(directory))[2]
+		self.pictures = [pic for pic in next(os.walk(directory))[2]
+		                 if pic.split(".")[-1].lower() in IMG_EXTENSIONS]
 		self.ranks = collections.defaultdict(lambda: DEFAULT_RANK)
 		try:
 			with open(self.path(JSON_FILENAME), "r") as f:

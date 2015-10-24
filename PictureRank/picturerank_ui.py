@@ -13,7 +13,6 @@ WIDTH, HEIGHT = 400, 400
 
 class PictureRankUI(tkinter.Frame):
 	
-	
 	def __init__(self, master, ranker):
 		tkinter.Frame.__init__(self, master)
 		self.master.title("Picture Rank")
@@ -22,9 +21,9 @@ class PictureRankUI(tkinter.Frame):
 		self.current = None
 		self.images = {}
 
-		self.label1 = tkinter.Label(self)
+		self.label1 = tkinter.Label(self, width=WIDTH, height=HEIGHT)
 		self.label1.grid(row=0, column=0)
-		self.label2 = tkinter.Label(self)
+		self.label2 = tkinter.Label(self, width=WIDTH, height=HEIGHT)
 		self.label2.grid(row=0, column=1)
 		
 		self.bind_all("<KeyRelease>", self.handle_keys)
@@ -59,11 +58,22 @@ class PictureRankUI(tkinter.Frame):
 	def load_image(self, pic):
 		if pic not in self.images:
 			path = self.ranker.path(pic)
-			img = Image.open(path)
+			img = self.auto_rotate(Image.open(path))
 			img.thumbnail((WIDTH, HEIGHT))
 			self.images[pic] = ImageTk.PhotoImage(img)
 		return self.images[pic]
-	
+
+	def auto_rotate(self, img):
+		# http://www.lifl.fr/~damien.riquet/auto-rotating-pictures-using-pil.html
+		try:
+			exif = img._getexif()
+			orientation_key = 274 # cf ExifTags
+			orientation = exif[orientation_key]
+			rotate_values = {3: 180, 6: 270, 8: 90}
+			img = img.rotate(rotate_values[orientation])
+		finally:
+			return img
+
 
 def main():
 	root = tkinter.Tk()
