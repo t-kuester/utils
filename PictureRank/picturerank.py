@@ -1,52 +1,68 @@
+"""Picture Rank model.
+by Tobias Kuester, 2015
+
+UI independent parts of the Picture Rank util: Finding all the pictures in a
+given directory and, most importantly, the algorithms for randomly selecting
+pairs of pictures and for ranking the pictures against each other, as well as
+the data structures holding the pictures and their ranking itself.
+"""
+
 import os.path
 import random
-import collections
 import json
 
 JSON_FILENAME = "picture-rank.json"
 IMG_EXTENSIONS = "jpg", "jpeg", "png", "gif"
-DEFAULT_RANK = 100
+DEFAULT_RANK = 0
 
 class PictureRank:
+	"""Picture Rank class.
+	
+	This class contains the data structure holding the current rankings and the
+	algorithms for selecting the next tournament pair and for updating ranks.
+	"""
 	
 	def __init__(self, directory):
+		"""Get all image files from given directory and initialize ranking. If
+		exists, update ranking with those from previous execution.
+		"""
 		self.directory = directory
-		self.pictures = [pic for pic in next(os.walk(directory))[2]
-		                 if pic.split(".")[-1].lower() in IMG_EXTENSIONS]
-		self.ranks = collections.defaultdict(lambda: DEFAULT_RANK)
+		self.pictures = dict((pic, DEFAULT_RANK) for pic in next(os.walk(directory))[2]
+		                 if pic.split(".")[-1].lower() in IMG_EXTENSIONS)
+		# load previous rankings from file, if they exist
 		if os.path.exists(self.path(JSON_FILENAME)):
 			with open(self.path(JSON_FILENAME), "r") as f:
 				old_ranks = json.load(f)
-				self.ranks.update(old_ranks)
+				self.pictures.update(old_ranks)
 
 	def __del__(self):
-		if self.ranks:
+		"""On exit, write current rankings to file."""
+		if self.pictures:
 			with open(self.path(JSON_FILENAME), "w") as f:
-				json.dump(self.ranks, f)
+				json.dump(self.pictures, f)
 		
 	def get_random_pair(self):
-		return [random.choice(self.pictures) for _ in range(2)]
+		"""Get random pair of pictures for next tournament."""
+		return [random.choice(self.pictures.keys()) for _ in range(2)]
 
 	def path(self, f):
+		"""Get full path for given file, relative to parent directory."""
 		return os.path.join(self.directory, f)
 
 	def rank(self, pic, value=None):
+		"""Get or set the rank for the given pictures."""
 		if value:
-			self.ranks[pic] = value
-		return self.ranks[pic]
+			self.pictures[pic] = value
+		return self.pictures[pic]
 
 	def update_rank(self, pic1, pic2, outcome):
-		self.ranks[pic1] -= outcome
-		self.ranks[pic2] += outcome
+		"""Update the ranks for the given two pictures, based on the outcome.
+		Values for outcome: -1: pic1 (left) won; +1: pic2 (right) won; 0: draw.
+		"""
+		self.pictures[pic1] -= outcome
+		self.pictures[pic2] += outcome
 		
 	def get_best(self, number=None):
-		ranking = sorted(self.ranks.items(), key=lambda x: x[1], reverse=True)
+		"""Get N best pictures, sorted by their rank."""
+		ranking = sorted(self.pictures.items(), key=lambda x: x[1], reverse=True)
 		return ranking[slice(number)]
-		
-
-def test():
-	directory = "/home/tkuester/TEST"
-	picrank = PictureRank(directory)
-	
-if __name__ == "__main__":
-	test()

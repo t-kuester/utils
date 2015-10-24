@@ -41,6 +41,17 @@ picking one of those, another eight similar colors, and so on, until the color
 converges to what is wanted.
 
 
+Picture Rank
+------------
+This program can be used for ranking pictures from a folder, for example when
+you have hundreds of pictures taken in your last vacation and you want to find
+a selection of the best few pictures for your album.
+
+The program works by repeatedly placing two random pictures next to each other
+and having the user spontaneously decide which one is better, tournament-style.
+After a few minutes of somewhat consistent voting, the best pictures are found.
+
+
 Quick Reader
 ------------
 A screen reader for quickly 'scanning' long texts by briefly flashing the single
