@@ -30,9 +30,10 @@ class PictureRankUI(tkinter.Frame):
 		self.bind_all("<KeyRelease>", self.handle_keys)
 		
 		self.load_images()
-		
+	
 	def handle_keys(self, event):
 		if event.keysym == "q":
+			del self.ranker
 			self.quit()
 		if event.keysym == "Left":
 			self.select(-1)
