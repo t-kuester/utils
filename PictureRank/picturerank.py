@@ -33,13 +33,14 @@ class PictureRank:
 		if os.path.exists(self.path(JSON_FILENAME)):
 			with open(self.path(JSON_FILENAME), "r") as f:
 				old_ranks = json.load(f)
-				self.pictures.update(old_ranks)
+				# self.pictures.update(old_ranks)
 
 	def __del__(self):
 		"""On exit, write current rankings to file."""
 		if self.pictures:
 			with open(self.path(JSON_FILENAME), "w") as f:
-				json.dump(self.pictures, f)
+				# json.dump(self.pictures, f)
+				pass
 		
 	def get_random_pair(self):
 		"""Get random pair of pictures for next tournament."""
@@ -60,12 +61,12 @@ class PictureRank:
 		Outcome relative to pic1: 1.0: won; 0.5: draw; 0.0: lost.
 		Based on formula from https://de.wikipedia.org/wiki/Elo-Zahl#Berechnung
 		"""
-		K = 20
-		r1, r2 = self.pictures[pic1], self.pictures[pic2]
-		e1 = 1. / (1 + 10**((r2 - r1)/400))
-		s1 = outcome
-		self.pictures[pic1] += K * (s1 - e1)
-		self.pictures[pic2] += K * (e1 - s1)
+		K = 20                                            # K-factor
+		r1, r2 = self.pictures[pic1], self.pictures[pic2] # current ranking
+		e1 = 1. / (1 + 10**((r2 - r1)/400))    # probability that pic1 wins
+		s1 = outcome                 # games won (one game -> 1, 0.5, or 0)
+		self.pictures[pic1] += K * (s1 - e1) # update ranks of pic1 and pic2
+		self.pictures[pic2] += K * (e1 - s1) # = K((1-s1)-(1-e1)) = K(s2-e2)
 		
 	def get_best(self, number=None):
 		"""Get N best pictures, sorted by their rank."""

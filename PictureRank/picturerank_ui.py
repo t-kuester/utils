@@ -37,8 +37,12 @@ class PictureRankUI(tkinter.Frame):
 
 		self.label1 = tkinter.Label(self, width=WIDTH, height=HEIGHT)
 		self.label1.grid(row=0, column=0)
+		self.label1.bind("<ButtonRelease>", lambda e: self.select(1.0))
+		
 		self.label2 = tkinter.Label(self, width=WIDTH, height=HEIGHT)
 		self.label2.grid(row=0, column=1)
+		self.label2.bind("<ButtonRelease>", lambda e: self.select(0.0))
+		
 		self.bind_all("<KeyRelease>", self.handle_keys)
 
 		self.ranking = tkinter.Listbox(self, height='25', selectmode='single')
