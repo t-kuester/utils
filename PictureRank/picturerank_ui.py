@@ -71,8 +71,8 @@ class PictureRankUI(tkinter.Frame):
 		ranks and ranking list and loads the next pair of pictures.
 		"""
 		if self.current:
-			p1, p2 = self.current
-			self.ranker.update_rank(p1, p2, outcome)
+			pic1, pic2 = self.current
+			self.ranker.update_rank(pic1, pic2, outcome)
 		self.set_random_images()
 		self.update_ranking()
 		
@@ -91,46 +91,47 @@ class PictureRankUI(tkinter.Frame):
 		"""Callback for showing pictures from the rankings list. LMB will show
 		the picture in the left label, and RMB will show it in the right label.
 		"""
-		p1, p2 = self.current
+		pic1, pic2 = self.current
 		selection = self.ranking.get(self.ranking.nearest(event.y))
-		pic = selection.split(DELIMITER, 1)[1]
+		pic_sel = selection.split(DELIMITER, 1)[1]
 		if event.num == 1:
-			self.set_images(pic, p2)
+			self.set_images(pic_sel, pic2)
 		if event.num == 3:
-			self.set_images(p1, pic)
+			self.set_images(pic1, pic_sel)
 			
 	def set_random_images(self):
 		"""Get random pair of images for next tournament and show them."""
-		p1, p2 = self.ranker.get_random_pair()
-		self.set_images(p1, p2)
+		pic1, pic2 = self.ranker.get_random_pair()
+		self.set_images(pic1, pic2)
 		
-	def set_images(self, p1, p2):
+	def set_images(self, pic1, pic2):
 		"""Show the given pictures in the two labels."""
-		self.label1.configure(image=self.load_image(p1))
-		self.label2.configure(image=self.load_image(p2))
-		self.current = p1, p2
+		self.label1.configure(image=self.load_image(pic1))
+		self.label2.configure(image=self.load_image(pic2))
+		self.current = pic1, pic2
 		
 	def load_image(self, pic):
 		"""Load the given picture using imaging library. Images are cached."""
 		if pic not in self.images:
 			path = self.ranker.path(pic)
-			img = self.auto_rotate(Image.open(path))
+			img = auto_rotate(Image.open(path))
 			img.thumbnail((self.size, self.size))
 			self.images[pic] = ImageTk.PhotoImage(img)
 		return self.images[pic]
-		
-	def auto_rotate(self, img):
-		"""Auto-rotate image based on EXIF information; adapted from
-		http://www.lifl.fr/~damien.riquet/auto-rotating-pictures-using-pil.html
-		"""
-		try:
-			exif = img._getexif()
-			orientation_key = 274 # cf ExifTags
-			orientation = exif[orientation_key]
-			rotate_values = {3: 180, 6: 270, 8: 90}
-			img = img.rotate(rotate_values[orientation])
-		finally:
-			return img
+
+
+def auto_rotate(img):
+	"""Auto-rotate image based on EXIF information; adapted from
+	http://www.lifl.fr/~damien.riquet/auto-rotating-pictures-using-pil.html
+	"""
+	try:
+		exif = img._getexif()
+		orientation_key = 274 # cf ExifTags
+		orientation = exif[orientation_key]
+		rotate_values = {3: 180, 6: 270, 8: 90}
+		img = img.rotate(rotate_values[orientation])
+	finally:
+		return img
 
 
 def main():
