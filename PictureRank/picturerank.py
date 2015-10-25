@@ -13,7 +13,7 @@ import json
 
 JSON_FILENAME = "picture-rank.json"
 IMG_EXTENSIONS = "jpg", "jpeg", "png", "gif"
-DEFAULT_RANK = 0
+DEFAULT_RANK = 1200
 
 class PictureRank:
 	"""Picture Rank class.
@@ -57,10 +57,15 @@ class PictureRank:
 
 	def update_rank(self, pic1, pic2, outcome):
 		"""Update the ranks for the given two pictures, based on the outcome.
-		Values for outcome: -1: pic1 (left) won; +1: pic2 (right) won; 0: draw.
+		Outcome relative to pic1: 1.0: won; 0.5: draw; 0.0: lost.
+		Based on formula from https://de.wikipedia.org/wiki/Elo-Zahl#Berechnung
 		"""
-		self.pictures[pic1] -= outcome
-		self.pictures[pic2] += outcome
+		K = 20
+		r1, r2 = self.pictures[pic1], self.pictures[pic2]
+		e1 = 1. / (1 + 10**((r2 - r1)/400))
+		s1 = outcome
+		self.pictures[pic1] += K * (s1 - e1)
+		self.pictures[pic2] += K * (e1 - s1)
 		
 	def get_best(self, number=None):
 		"""Get N best pictures, sorted by their rank."""

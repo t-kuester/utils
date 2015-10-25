@@ -56,11 +56,11 @@ class PictureRankUI(tkinter.Frame):
 			del self.ranker
 			self.quit()
 		if event.keysym == "Left":
-			self.select(-1)
+			self.select(1.0)
 		if event.keysym == "Right":
-			self.select(+1)
+			self.select(0.0)
 		if event.keysym in ("Up", "Down"):
-			self.select(0)
+			self.select(0.5)
 
 	def select(self, outcome):
 		"""Callback for when one of the pictures has been selected. Updates the
@@ -79,7 +79,7 @@ class PictureRankUI(tkinter.Frame):
 		ranking = self.ranker.get_best()
 		self.ranking.delete(0, len(ranking))
 		for i, (pic, rank) in enumerate(ranking):
-			self.ranking.insert(i, "%s%s%s" % (rank, DELIMITER, pic))
+			self.ranking.insert(i, "%d%s%s" % (rank, DELIMITER, pic))
 			if pic in self.current:
 				self.ranking.itemconfigure(i, bg="yellow")
 		
