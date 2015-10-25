@@ -33,14 +33,13 @@ class PictureRank:
 		if os.path.exists(self.path(JSON_FILENAME)):
 			with open(self.path(JSON_FILENAME), "r") as f:
 				old_ranks = json.load(f)
-				# self.pictures.update(old_ranks)
+				self.pictures.update(old_ranks)
 
 	def __del__(self):
 		"""On exit, write current rankings to file."""
 		if self.pictures:
 			with open(self.path(JSON_FILENAME), "w") as f:
-				# json.dump(self.pictures, f)
-				pass
+				json.dump(self.pictures, f)
 		
 	def get_random_pair(self):
 		"""Get random pair of pictures for next tournament."""

@@ -13,7 +13,6 @@ import tkFileDialog as filedialog
 import picturerank
 from PIL import Image, ImageTk
 
-WIDTH, HEIGHT = 400, 400
 DELIMITER = " - "
 
 class PictureRankUI(tkinter.Frame):
@@ -23,7 +22,7 @@ class PictureRankUI(tkinter.Frame):
 	list showing the current rankings and providing keyboard and mouse controls.
 	"""
 	
-	def __init__(self, master, ranker):
+	def __init__(self, master, ranker, size):
 		"""Create picture ranking frame instance, creating two labels for the
 		pictures and a listbox for the ranking. The UI is controlled via arrow
 		keys, and pictures can be selected from the list using the mouse.
@@ -34,14 +33,15 @@ class PictureRankUI(tkinter.Frame):
 		self.ranker = ranker
 		self.current = None
 		self.images = {}
+		self.size = size
 
-		self.label1 = tkinter.Label(self, width=WIDTH, height=HEIGHT)
-		self.label1.grid(row=0, column=0)
+		self.label1 = tkinter.Label(self, width=size, height=size)
 		self.label1.bind("<ButtonRelease>", lambda e: self.select(1.0))
+		self.label1.grid(row=0, column=0)
 		
-		self.label2 = tkinter.Label(self, width=WIDTH, height=HEIGHT)
-		self.label2.grid(row=0, column=1)
+		self.label2 = tkinter.Label(self, width=size, height=size)
 		self.label2.bind("<ButtonRelease>", lambda e: self.select(0.0))
+		self.label2.grid(row=0, column=1)
 		
 		self.bind_all("<KeyRelease>", self.handle_keys)
 
@@ -115,7 +115,7 @@ class PictureRankUI(tkinter.Frame):
 		if pic not in self.images:
 			path = self.ranker.path(pic)
 			img = self.auto_rotate(Image.open(path))
-			img.thumbnail((WIDTH, HEIGHT))
+			img.thumbnail((self.size, self.size))
 			self.images[pic] = ImageTk.PhotoImage(img)
 		return self.images[pic]
 		
@@ -136,15 +136,21 @@ class PictureRankUI(tkinter.Frame):
 def main():
 	"""Parse command line parameters and run application.
 	"""
+	import optparse
 	root = tkinter.Tk()
-	
-	# TODO parse command line parameters: size, directory
-	
-	directory = "/home/tkuester/TEST"
-	# directory = filedialog.askdirectory()
-	ranker = picturerank.PictureRank(directory)
 
-	PictureRankUI(root, ranker)
+	# parse and check command line options
+	parser = optparse.OptionParser("picturerynk_ui.py [Options] [Directory]")
+	parser.add_option("-s", "--size", dest="size", 
+					  help="size of image previews")
+	(options, args) = parser.parse_args()
+	
+	size = int(options.size) if options.size else 400
+	directory = args[0] if args else filedialog.askdirectory()
+	# directory = "/home/tkuester/TEST"
+
+	ranker = picturerank.PictureRank(directory)
+	PictureRankUI(root, ranker, size)
 	root.mainloop()
 	
 if __name__ == "__main__":
