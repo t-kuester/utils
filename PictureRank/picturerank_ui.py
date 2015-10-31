@@ -148,7 +148,6 @@ def main():
 	
 	size = int(options.size) if options.size else 400
 	directory = args[0] if args else filedialog.askdirectory()
-	# directory = "/home/tkuester/TEST"
 
 	ranker = picturerank.PictureRank(directory)
 	PictureRankUI(root, ranker, size)
