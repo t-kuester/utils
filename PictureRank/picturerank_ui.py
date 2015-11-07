@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 """Picture Rank UI
 by Tobias Kuester, 2015

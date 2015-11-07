@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 """Evolution Strategy based Color Chooser Application
 by Tobias Kuester, 2010

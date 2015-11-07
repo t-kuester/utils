@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 # -*- coding: utf8 -*-
 
 """A simple command-line tool for replacing Umlauts in HTML and Latex documents.

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 """Quick Reader.
 by Tobias Kuester, 2010
