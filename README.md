@@ -16,6 +16,22 @@ going.
 *very early version*
 
 
+Backup
+------
+A simple program for creating backups. Given a list of directories, the program
+will create archive files of those directories and collect them in a specified
+target directory. For each directory, the program will memorize the time of the
+last backup, the preferred compression type (zip or tar), and check whether are
+files have been added or changed since the last backup.
+
+This program is no supposed to be as powerful and as versatile and many already
+available backup tools, but much simpler. Just a backup tool where I know exactly
+what it does, and what not. Last but not least, this is also supposed to be used
+by my parents, so sometimes simpler is really better.
+
+*very early version*
+
+
 BibAnalyzer
 -----------
 When this is done, its supposed to be a small utility program or library for
