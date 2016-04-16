@@ -1,4 +1,4 @@
-package de.tkuester.snddelay;
+package de.tkuester.snddelay.runner;
 
 import java.util.Random;
 
@@ -15,22 +15,20 @@ import javax.sound.sampled.SourceDataLine;
  *
  * @author tkuester
  */
-public class NoiseRunner extends Thread {
+public class NoiseRunner extends AbstractRunner {
 	
 	/** Different types of noise... currently only white noise is supported */
 	enum NOiSE_TYPE {
 		WHITE, PINK, BROWN, GRAY;
 	}
 
-	public static final float SAMPLE_RATE = 8000.0f;
+	public static final float SAMPLE_RATE = 8_000.0f;
 	public static final int SAMPLE_BITS = 32;
-	public static final int BUFFER_SIZE = 100_000;
+	public static final int BUFFER_SIZE = 10_000;
 
 	/** audio data line representing the loudspeaker */
 	private SourceDataLine loudspeaker;
 	
-	/** flag indicating whether the thread should still be running */
-	private boolean running = true;
 	
 	/**
 	 * Create new Sound Delay Runner.
@@ -52,7 +50,6 @@ public class NoiseRunner extends Thread {
 	public void run() {
 		// set up ring buffer and other variables
 		byte[] buffer = new byte[BUFFER_SIZE];
-		new Random().nextBytes(buffer);
 		
 		int spkPosition = 0;
 
@@ -60,6 +57,9 @@ public class NoiseRunner extends Thread {
 		loudspeaker.start();
 		
 		while (running) {
+			// generate new random noise
+			new Random().nextBytes(buffer);
+			
 			// write chunk to speaker
 			int bytesToWrite = buffer.length - spkPosition;
 			int bytesToSpk = loudspeaker.write(buffer, spkPosition, bytesToWrite);
@@ -72,10 +72,4 @@ public class NoiseRunner extends Thread {
 		System.out.println("finished");
 	}
 	
-	/**
-	 * Set a flag so the thread stops running.
-	 */
-	public void stopRunning() {
-		this.running = false;
-	}
 }
