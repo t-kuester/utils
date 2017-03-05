@@ -14,11 +14,9 @@ Pictures are shown in a list and can be rearanged freely in that list
 can be renamed consistently.
 
 TODO
-- improve UI layout
 - make preview resizeable (and update cached images)
 - show thumbnail in list
-- show scrollbars in list
-- check indices when moving
+- scroll list to selection
 - port to python 3
 - merge with PictureRank to enable bulk-rename of ranked pictures
 """
@@ -48,53 +46,53 @@ class PictureSortUI(tkinter.Frame):
 		self.size = size
 		self.directory = None
 		self.pattern = "Untitled"
-		#~ self.grid()
-		self.pack()
+		self.grid()
 		
 		# image preview
 		self.preview = tkinter.Label(self, width=size, height=size)
-		#~ self.preview.grid(row=0, column=3, rowspan=4)
-		self.preview.pack(side="right", fill="both")
+		self.preview.grid(row=0, column=3, rowspan=3)
 		
-		# list of pictures
-		self.piclist = tkinter.Listbox(self, height='16', bg='white', activestyle='dotbox')
+		# list of pictures, in scroll-frame
+		frame = tkinter.Frame(self)
+		frame.grid(row=0, column=0, columnspan=2)
+		scrollbar = tkinter.Scrollbar(frame, orient="vertical")
+		self.piclist = tkinter.Listbox(frame, height='16', bg='white', 
+				activestyle='dotbox', yscrollcommand=scrollbar.set)
 		self.piclist.bind('<ButtonRelease-1>', self.show_preview)
 		self.piclist.bind("<KeyRelease>", self.show_preview)
-		#~ self.piclist.grid(row=1, column=0, columnspan=2)
-		self.piclist.pack(side="top", fill="x")
+		self.piclist.pack(side="left", fill="both", expand=1)
+		scrollbar.config(command=self.piclist.yview)
+		scrollbar.pack(side="right", fill="y")
 
 		# open directory button
 		b_open = tkinter.Button(self, text="Open", command=self.open_directory)
-		#~ b_open.grid(row=0, column=0, columnspan=2)
-		b_open.pack(fill="y")
+		b_open.grid(row=1, column=0, sticky="nsew")
 		
 		# move up button
 		b_up = tkinter.Button(self, text="Move up", command=lambda: self.move(-1))
-		#~ b_up.grid(row=3, column=0)
-		b_up.pack(fill="y")
+		b_up.grid(row=1, column=1, sticky="nsew")
 		
 		# move down button
 		b_down = tkinter.Button(self, text="Move down", command=lambda: self.move(+1))
-		#~ b_down.grid(row=3, column=1)
-		b_down.pack(fill="y")
+		b_down.grid(row=2, column=1, sticky="nsew")
 		
 		# bulk rename button
 		b_rename = tkinter.Button(self, text="Rename", command=self.bulk_rename)
-		#~ b_rename.grid(row=4, column=0, columnspan=2)
-		b_rename.pack(fill="y")
+		b_rename.grid(row=2, column=0, sticky="nsew")
 		
 
 	def move(self, direction):
 		index = int(self.piclist.curselection()[0])
 		other = index + direction
 		both = (index, other)
-		selection = self.piclist.get(index)
-		other_pic = self.piclist.get(other)
-		reverse = (selection, other_pic) if index > other else (other_pic, selection)
-		
-		self.piclist.delete(*sorted(both))
-		self.piclist.insert(min(both), *reverse)
-		self.piclist.select_set(other)
+		if 0 <= other < self.piclist.size():
+			selection = self.piclist.get(index)
+			other_pic = self.piclist.get(other)
+			reverse = (selection, other_pic) if index > other else (other_pic, selection)
+
+			self.piclist.delete(*sorted(both))
+			self.piclist.insert(min(both), *reverse)
+			self.piclist.select_set(other)
 				
 	def open_directory(self, ask=True):
 		if ask:
@@ -135,9 +133,10 @@ class PictureSortUI(tkinter.Frame):
 		return os.path.join(self.directory, f)
 	
 	def show_preview(self, event):
-		index = int(self.piclist.curselection()[0])
-		selection = self.piclist.get(index)
-		self.preview.configure(image=self.load_image(selection))
+		index = self.piclist.curselection()
+		if index:
+			selection = self.piclist.get(index)
+			self.preview.configure(image=self.load_image(selection))
 			
 	def load_image(self, pic):
 		"""Load the given picture using imaging library. Images are cached."""
