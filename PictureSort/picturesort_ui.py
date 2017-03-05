@@ -49,12 +49,12 @@ class PictureSortUI(tkinter.Frame):
 		self.grid()
 		
 		# image preview
-		self.preview = tkinter.Label(self, width=size, height=size)
-		self.preview.grid(row=0, column=3, rowspan=3)
+		self.preview = tkinter.Canvas(self, width=size, height=size)
+		self.preview.grid(row=0, column=3, rowspan=3, sticky="nsew")
 		
 		# list of pictures, in scroll-frame
 		frame = tkinter.Frame(self)
-		frame.grid(row=0, column=0, columnspan=2)
+		frame.grid(row=0, column=0, columnspan=2, sticky="ns")
 		scrollbar = tkinter.Scrollbar(frame, orient="vertical")
 		self.piclist = tkinter.Listbox(frame, height='16', bg='white', 
 				activestyle='dotbox', yscrollcommand=scrollbar.set)
@@ -136,7 +136,9 @@ class PictureSortUI(tkinter.Frame):
 		index = self.piclist.curselection()
 		if index:
 			selection = self.piclist.get(index)
-			self.preview.configure(image=self.load_image(selection))
+			self.preview.delete("all")
+			x, y = self.preview.winfo_width() / 2, self.preview.winfo_height() / 2
+			self.preview.create_image((x, y), image=self.load_image(selection))
 			
 	def load_image(self, pic):
 		"""Load the given picture using imaging library. Images are cached."""
@@ -164,7 +166,7 @@ def auto_rotate(img):
 
 def main():
 	root = tkinter.Tk()
-	PictureSortUI(root, 40)
+	PictureSortUI(root, 500)
 	root.mainloop()
 	
 if __name__ == "__main__":
