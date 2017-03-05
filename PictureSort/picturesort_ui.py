@@ -18,7 +18,6 @@ TODO
 - make preview resizeable (and update cached images)
 - show thumbnail in list
 - show scrollbars in list
-- ask for common name/pattern
 - keyboard control for moving pictures
 - keep selection in list when moving pictures
 - port to python 3
@@ -27,6 +26,8 @@ TODO
 
 import Tkinter as tkinter
 import tkFileDialog as filedialog
+import tkSimpleDialog as simpledialog
+import tkMessageBox as messagebox
 from PIL import Image, ImageTk
 import os
 
@@ -48,7 +49,7 @@ class PictureSortUI(tkinter.Frame):
 		self.images = {}
 		self.size = size
 		self.directory = None
-		self.pattern = "Untitled_%03d"
+		self.pattern = "Untitled"
 		#~ self.grid()
 		self.pack()
 		
@@ -116,24 +117,27 @@ class PictureSortUI(tkinter.Frame):
 							 
 
 	def bulk_rename(self):
-		# TODO ask for pattern in generic input dialog
-		
-		pictures = self.piclist.get(0, self.piclist.size())
-		temp_pics = ["~" + pic for pic in pictures]
+		# ask for pattern in generic input dialog
+		pattern = simpledialog.askstring("Rename", "Name to use for bulk rename:",
+				initialvalue=self.pattern)
+		if pattern is not None:
+			self.pattern = pattern
+			pictures = self.piclist.get(0, self.piclist.size())
+			temp_pics = ["~" + pic for pic in pictures]
 
-		path = self.path
-		
-		for pic, temp in zip(pictures, temp_pics):
-			os.rename(path(pic), path(temp))
-		
-		# rename in two passes to prevent name clashes
-		for i, pic in enumerate(temp_pics, start=1):
-			_, ext = os.path.splitext(pic)
-			new_name = (self.pattern % i) + ext
-			os.rename(path(pic), path(new_name))
+			try:
+				# rename in two passes to prevent name clashes
+				for pic, temp in zip(pictures, temp_pics):
+					os.rename(self.path(pic), self.path(temp))
+				for i, pic in enumerate(temp_pics, start=1):
+					name, ext = os.path.splitext(pic)
+					new_name = "%s_%03d%s" % (self.pattern, i, ext)
+					os.rename(self.path(pic), self.path(new_name))
 
-		self.open_directory(False)
-			
+				# reload directory
+				self.open_directory(False)
+			except Exception as e:
+				messagebox.showerror(title="Error", message=str(e))
 
 	def path(self, f):
 		"""Get full path for given file, relative to parent directory."""
