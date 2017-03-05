@@ -141,7 +141,7 @@ def main():
 	root = tkinter.Tk()
 
 	# parse and check command line options
-	parser = optparse.OptionParser("picturerynk_ui.py [Options] [Directory]")
+	parser = optparse.OptionParser("picturerank_ui.py [Options] [Directory]")
 	parser.add_option("-s", "--size", dest="size", 
 					  help="size of image previews")
 	(options, args) = parser.parse_args()
