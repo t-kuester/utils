@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf8 -*-
 
 """Picture Sort UI
 by Tobias Kuester, 2017
@@ -15,7 +16,7 @@ can be renamed consistently.
 
 TODO
 - make preview resizeable (and update cached images)
-- show thumbnail in list
+- show thumbnail in list -> not with listbox; custom list of labels?
 - scroll list to selection
 - port to python 3
 - merge with PictureRank to enable bulk-rename of ranked pictures
@@ -40,6 +41,9 @@ class PictureSortUI(tkinter.Frame):
 	"""
 	
 	def __init__(self, master, size):
+		"""Create PictureSortUI instance, containing list of image files,
+		large preview, and some buttons for re-ordering and renaming.
+		"""
 		tkinter.Frame.__init__(self, master)
 		self.master.title("Picture Sorter")
 		self.images = {}
@@ -79,7 +83,6 @@ class PictureSortUI(tkinter.Frame):
 		# bulk rename button
 		b_rename = tkinter.Button(self, text="Rename", command=self.bulk_rename)
 		b_rename.grid(row=2, column=0, sticky="nsew")
-		
 
 	def move(self, direction):
 		index = int(self.piclist.curselection()[0])
@@ -93,10 +96,14 @@ class PictureSortUI(tkinter.Frame):
 			self.piclist.delete(*sorted(both))
 			self.piclist.insert(min(both), *reverse)
 			self.piclist.select_set(other)
-				
+
 	def open_directory(self, ask=True):
+		"""Ask user for directory and show all the image files within in
+		the list, replacing any that were there before.
+		"""
 		if ask:
 			self.directory = filedialog.askdirectory()
+			self.images.clear()
 		if self.directory:
 			pictures = [pic for pic in next(os.walk(self.directory))[2]
 							 if pic.split(".")[-1].lower() in IMG_EXTENSIONS]
@@ -106,6 +113,11 @@ class PictureSortUI(tkinter.Frame):
 				self.piclist.insert(i, pic)
 
 	def bulk_rename(self):
+		"""Ask for pictures' common name, then bulk-rename all the files
+		to "<name>_%03d.<ext>". This renames all the files twice, first
+		using some temp names in the form "~<current-name>" to avoid name
+		clashes.
+		"""
 		# ask for pattern in generic input dialog
 		pattern = simpledialog.askstring("Rename", "Name to use for bulk rename:",
 				initialvalue=self.pattern)
@@ -129,10 +141,14 @@ class PictureSortUI(tkinter.Frame):
 				messagebox.showerror(title="Error", message=str(e))
 
 	def path(self, f):
-		"""Get full path for given file, relative to parent directory."""
+		"""Get full path for given file, relative to parent directory.
+		"""
 		return os.path.join(self.directory, f)
 	
 	def show_preview(self, event):
+		"""Get currently selected picture from list, if any, and show it
+		in the preview.
+		"""
 		index = self.piclist.curselection()
 		if index:
 			selection = self.piclist.get(index)
@@ -141,7 +157,8 @@ class PictureSortUI(tkinter.Frame):
 			self.preview.create_image((x, y), image=self.load_image(selection))
 			
 	def load_image(self, pic):
-		"""Load the given picture using imaging library. Images are cached."""
+		"""Load the given picture using imaging library. Images are cached.
+		"""
 		if pic not in self.images:
 			path = self.path(pic)
 			img = auto_rotate(Image.open(path))
