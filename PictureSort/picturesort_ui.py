@@ -18,8 +18,7 @@ TODO
 - make preview resizeable (and update cached images)
 - show thumbnail in list
 - show scrollbars in list
-- keyboard control for moving pictures
-- keep selection in list when moving pictures
+- check indices when moving
 - port to python 3
 - merge with PictureRank to enable bulk-rename of ranked pictures
 """
@@ -45,7 +44,6 @@ class PictureSortUI(tkinter.Frame):
 	def __init__(self, master, size):
 		tkinter.Frame.__init__(self, master)
 		self.master.title("Picture Sorter")
-		self.current = None
 		self.images = {}
 		self.size = size
 		self.directory = None
@@ -54,13 +52,14 @@ class PictureSortUI(tkinter.Frame):
 		self.pack()
 		
 		# image preview
-		self.preview = tkinter.Label(self, text="PREVIEW", width=size, height=size)
+		self.preview = tkinter.Label(self, width=size, height=size)
 		#~ self.preview.grid(row=0, column=3, rowspan=4)
 		self.preview.pack(side="right", fill="both")
 		
 		# list of pictures
 		self.piclist = tkinter.Listbox(self, height='16', bg='white', activestyle='dotbox')
 		self.piclist.bind('<ButtonRelease-1>', self.show_preview)
+		self.piclist.bind("<KeyRelease>", self.show_preview)
 		#~ self.piclist.grid(row=1, column=0, columnspan=2)
 		self.piclist.pack(side="top", fill="x")
 
@@ -84,15 +83,6 @@ class PictureSortUI(tkinter.Frame):
 		#~ b_rename.grid(row=4, column=0, columnspan=2)
 		b_rename.pack(fill="y")
 		
-		self.bind_all("<KeyRelease>", self.handle_keys)
-		
-	def handle_keys(self, event):
-		if event.keysym == "q":
-			self.quit()
-		if event.keysym == "Up":
-			self.move(-1)
-		if event.keysym == "Down":
-			self.move(+1)
 
 	def move(self, direction):
 		index = int(self.piclist.curselection()[0])
@@ -104,6 +94,7 @@ class PictureSortUI(tkinter.Frame):
 		
 		self.piclist.delete(*sorted(both))
 		self.piclist.insert(min(both), *reverse)
+		self.piclist.select_set(other)
 				
 	def open_directory(self, ask=True):
 		if ask:
@@ -111,10 +102,10 @@ class PictureSortUI(tkinter.Frame):
 		if self.directory:
 			pictures = [pic for pic in next(os.walk(self.directory))[2]
 							 if pic.split(".")[-1].lower() in IMG_EXTENSIONS]
-							 
+
+			self.piclist.delete(0, self.piclist.size())
 			for i, pic in enumerate(sorted(pictures)):
 				self.piclist.insert(i, pic)
-							 
 
 	def bulk_rename(self):
 		# ask for pattern in generic input dialog
@@ -144,7 +135,8 @@ class PictureSortUI(tkinter.Frame):
 		return os.path.join(self.directory, f)
 	
 	def show_preview(self, event):
-		selection = self.piclist.get(self.piclist.nearest(event.y))
+		index = int(self.piclist.curselection()[0])
+		selection = self.piclist.get(index)
 		self.preview.configure(image=self.load_image(selection))
 			
 	def load_image(self, pic):
