@@ -84,17 +84,19 @@ class PictureSortUI(tkinter.Frame):
 		b_rename = tkinter.Button(self, text="Rename", command=self.bulk_rename)
 		b_rename.grid(row=2, column=0, sticky="nsew")
 
-	def move(self, direction):
-		index = int(self.piclist.curselection()[0])
-		other = index + direction
-		both = (index, other)
+		self.bind_all("<KeyRelease-q>", lambda e: self.quit())
+
+	def move(self, delta):
+		"""Move selected list element by delta positions (positive means
+		down) and sets selection to the new position.
+		"""
+		sel = self.piclist.curselection()
+		index = int(sel[0]) if sel else 0
+		other = index + delta
 		if 0 <= other < self.piclist.size():
 			selection = self.piclist.get(index)
-			other_pic = self.piclist.get(other)
-			reverse = (selection, other_pic) if index > other else (other_pic, selection)
-
-			self.piclist.delete(*sorted(both))
-			self.piclist.insert(min(both), *reverse)
+			self.piclist.delete(index)
+			self.piclist.insert(other, selection)
 			self.piclist.select_set(other)
 
 	def open_directory(self, ask=True):
@@ -182,6 +184,7 @@ def auto_rotate(img):
 
 
 def main():
+	# TODO add parameter parsing back in, for size and start directory
 	root = tkinter.Tk()
 	PictureSortUI(root, 500)
 	root.mainloop()
