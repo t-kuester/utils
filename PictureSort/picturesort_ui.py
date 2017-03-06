@@ -60,8 +60,9 @@ class PictureSortUI(tkinter.Frame):
 		frame = tkinter.Frame(self)
 		frame.grid(row=0, column=0, columnspan=2, sticky="ns")
 		scrollbar = tkinter.Scrollbar(frame, orient="vertical")
-		self.piclist = tkinter.Listbox(frame, height='16', bg='white', 
-				activestyle='dotbox', yscrollcommand=scrollbar.set)
+		self.piclist = tkinter.Listbox(frame, height='16', bg='white',
+				activestyle='dotbox', selectmode="extended",
+				yscrollcommand=scrollbar.set)
 		self.piclist.bind('<ButtonRelease-1>', self.show_preview)
 		self.piclist.bind("<KeyRelease>", self.show_preview)
 		self.piclist.pack(side="left", fill="both", expand=1)
@@ -87,17 +88,17 @@ class PictureSortUI(tkinter.Frame):
 		self.bind_all("<KeyRelease-q>", lambda e: self.quit())
 
 	def move(self, delta):
-		"""Move selected list element by delta positions (positive means
-		down) and sets selection to the new position.
+		"""Move selected list elements by delta positions (positive means
+		down) and sets selection to the new positions.
 		"""
-		sel = self.piclist.curselection()
-		index = int(sel[0]) if sel else 0
-		other = index + delta
-		if 0 <= other < self.piclist.size():
-			selection = self.piclist.get(index)
-			self.piclist.delete(index)
-			self.piclist.insert(other, selection)
-			self.piclist.select_set(other)
+		index = self.piclist.curselection()
+		if index:
+			first, last = int(index[0]), int(index[-1])  # could be the same
+			if 0 <= first + delta and last + delta < self.piclist.size():
+				selection = self.piclist.get(first, last)
+				self.piclist.delete(first, last)
+				self.piclist.insert(first + delta, *selection)
+				self.piclist.select_set(first + delta, last + delta)
 
 	def open_directory(self, ask=True):
 		"""Ask user for directory and show all the image files within in
@@ -153,7 +154,7 @@ class PictureSortUI(tkinter.Frame):
 		"""
 		index = self.piclist.curselection()
 		if index:
-			selection = self.piclist.get(index)
+			selection = self.piclist.get(index[0])
 			self.preview.delete("all")
 			x, y = self.preview.winfo_width() / 2, self.preview.winfo_height() / 2
 			self.preview.create_image((x, y), image=self.load_image(selection))
