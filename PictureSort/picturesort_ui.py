@@ -113,7 +113,7 @@ class PictureSortUI(tkinter.Frame):
 			pictures = [pic for pic in next(os.walk(self.directory))[2]
 							 if pic.split(".")[-1].lower() in IMG_EXTENSIONS]
 
-			self.piclist.delete(0, self.piclist.size())
+			self.piclist.delete(0, "end")
 			for i, pic in enumerate(sorted(pictures)):
 				self.piclist.insert(i, pic)
 
@@ -121,24 +121,38 @@ class PictureSortUI(tkinter.Frame):
 		"""Ask for pictures' common name, then bulk-rename all the files
 		to "<name>_%03d.<ext>". This renames all the files twice, first
 		using some temp names in the form "~<current-name>" to avoid name
-		clashes.
+		clashes. If multiple files are selected in the list, there's also
+		the option to bulk-rename only those selected files.
 		"""
+		# get selection before dialog clears it
+		sel = self.piclist.curselection()
 		# ask for pattern in generic input dialog
 		pattern = simpledialog.askstring("Rename", "Name to use for bulk rename:",
 				initialvalue=self.pattern)
 		if pattern is not None:
 			self.pattern = pattern
-			pictures = self.piclist.get(0, self.piclist.size())
+
+			# rename all pictures or just selected?
+			all_pictures = self.piclist.get(0, "end")
+			if len(sel) > 1 and messagebox.askyesno("Rename", "Rename selected files only?"):
+				pictures = self.piclist.get(sel[0], sel[-1])
+				keep = set(all_pictures) - set(pictures)
+			else:
+				pictures, keep = all_pictures, set()
+
 			temp_pics = ["~" + pic for pic in pictures]
+			new_names = ["%s_%03d%s" % (pattern, i, os.path.splitext(pic)[1])
+			             for i, pic in enumerate(temp_pics, start=1)]
 
 			try:
+				if any(x in keep for x in temp_pics) or any(x in keep for x in new_names):
+					raise Exception("Bulk-Rename would result in duplicate names.")
+
 				# rename in two passes to prevent name clashes
 				for pic, temp in zip(pictures, temp_pics):
 					os.rename(self.path(pic), self.path(temp))
-				for i, pic in enumerate(temp_pics, start=1):
-					name, ext = os.path.splitext(pic)
-					new_name = "%s_%03d%s" % (self.pattern, i, ext)
-					os.rename(self.path(pic), self.path(new_name))
+				for temp, new_pic in zip(temp_pics, new_names):
+					os.rename(self.path(temp), self.path(new_pic))
 
 				# reload directory
 				self.open_directory(False)
