@@ -17,6 +17,7 @@ can be renamed consistently.
 TODO
 - make preview resizeable (and update cached images)
 - show thumbnail in list -> not with listbox; custom list of labels?
+- if this does not work, show thumbnail in tooltip on mouseover
 - scroll list to selection
 - port to python 3
 - merge with PictureRank to enable bulk-rename of ranked pictures
@@ -40,7 +41,7 @@ class PictureSortUI(tkinter.Frame):
 	pictures, and a large preview of the currently selected picture.
 	"""
 	
-	def __init__(self, master, size):
+	def __init__(self, master, size, directory=None):
 		"""Create PictureSortUI instance, containing list of image files,
 		large preview, and some buttons for re-ordering and renaming.
 		"""
@@ -48,7 +49,7 @@ class PictureSortUI(tkinter.Frame):
 		self.master.title("Picture Sorter")
 		self.images = {}
 		self.size = size
-		self.directory = None
+		self.directory = directory
 		self.pattern = "Untitled"
 		self.grid()
 		
@@ -86,6 +87,7 @@ class PictureSortUI(tkinter.Frame):
 		b_rename.grid(row=2, column=0, sticky="nsew")
 
 		self.bind_all("<KeyRelease-q>", lambda e: self.quit())
+		self.open_directory(False)
 
 	def move(self, delta):
 		"""Move selected list elements by delta positions (positive means
@@ -185,11 +187,21 @@ def auto_rotate(img):
 
 
 def main():
-	# TODO add parameter parsing back in, for size and start directory
+	import optparse
 	root = tkinter.Tk()
-	PictureSortUI(root, 500)
+
+	# parse and check command line options
+	parser = optparse.OptionParser("picturesort_ui.py [Options] [Directory]")
+	parser.add_option("-s", "--size", dest="size",
+					  help="size of image previews")
+	(options, args) = parser.parse_args()
+
+	size = int(options.size or 500)
+	directory = args[0] if args else None
+
+	PictureSortUI(root, size, directory)
 	root.mainloop()
 	
 if __name__ == "__main__":
 	main()
-	
+
