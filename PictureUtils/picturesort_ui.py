@@ -29,6 +29,7 @@ import tkSimpleDialog as simpledialog
 import tkMessageBox as messagebox
 from PIL import Image, ImageTk
 import os
+from pictureutil import auto_rotate
 
 IMG_EXTENSIONS = "jpg", "jpeg", "png", "gif"
 
@@ -184,20 +185,6 @@ class PictureSortUI(tkinter.Frame):
 			img.thumbnail((self.size, self.size))
 			self.images[pic] = ImageTk.PhotoImage(img)
 		return self.images[pic]
-
-
-def auto_rotate(img):
-	"""Auto-rotate image based on EXIF information; adapted from
-	http://www.lifl.fr/~damien.riquet/auto-rotating-pictures-using-pil.html
-	"""
-	try:
-		exif = img._getexif()
-		orientation_key = 274 # cf ExifTags
-		orientation = exif[orientation_key]
-		rotate_values = {3: 180, 6: 270, 8: 90}
-		img = img.rotate(rotate_values[orientation])
-	finally:
-		return img
 
 
 def main():

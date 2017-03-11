@@ -27,13 +27,14 @@ class PictureRank:
 		exists, update ranking with those from previous execution.
 		"""
 		self.directory = directory
-		self.pictures = dict((pic, DEFAULT_RANK) for pic in next(os.walk(directory))[2]
-		                 if pic.split(".")[-1].lower() in IMG_EXTENSIONS)
+		self.pictures = {pic: DEFAULT_RANK for pic in next(os.walk(directory))[2]
+		                 if pic.split(".")[-1].lower() in IMG_EXTENSIONS}
 		# load previous rankings from file, if they exist
 		if os.path.exists(self.path(JSON_FILENAME)):
 			with open(self.path(JSON_FILENAME), "r") as f:
 				old_ranks = json.load(f)
-				self.pictures.update(old_ranks)
+				self.pictures.update({p: r for p, r in old_ranks.items() 
+				                           if p in self.pictures})
 
 	def __del__(self):
 		"""On exit, write current rankings to file."""
@@ -43,7 +44,7 @@ class PictureRank:
 		
 	def get_random_pair(self):
 		"""Get random pair of pictures for next tournament."""
-		return [random.choice(self.pictures.keys()) for _ in range(2)]
+		return random.sample(self.pictures.keys(), 2)
 
 	def path(self, f):
 		"""Get full path for given file, relative to parent directory."""
