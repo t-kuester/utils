@@ -15,10 +15,7 @@ Pictures are shown in a list and can be rearanged freely in that list
 can be renamed consistently.
 
 TODO
-- make preview resizeable (and update cached images)
-- show thumbnail in list -> not with listbox; custom list of labels?
-- if this does not work, show thumbnail in tooltip on mouseover
-- scroll list to selection
+- show thumbnail in tooltip on mouseover
 - port to python 3
 - merge with PictureRank to enable bulk-rename of ranked pictures
 """
