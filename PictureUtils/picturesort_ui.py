@@ -105,7 +105,7 @@ class PictureSortUI(tkinter.Frame):
 		the list, replacing any that were there before.
 		"""
 		if ask:
-			self.directory = filedialog.askdirectory()
+			self.directory = filedialog.askdirectory() or self.directory
 			self.images.clear()
 		if self.directory:
 			pictures = [pic for pic in next(os.walk(self.directory))[2]
