@@ -1,4 +1,4 @@
-package de.tkuester.snddelay;
+package de.tkuester.snddelay.runner;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
@@ -15,7 +15,7 @@ import javax.sound.sampled.TargetDataLine;
  *
  * @author tkuester
  */
-public class SndDelayRunner extends Thread {
+public class DelayRunner extends AbstractRunner {
 
 	/** sample rate. 8 kHz should be enough for speech; CD-Audio uses 44.1 kHz. Lower 
 	 * probably better for post-processing (FFT), but unless used, higher is better*/ 
@@ -36,8 +36,6 @@ public class SndDelayRunner extends Thread {
 	/** the delay between reading from microphone and writing to speaker */
 	private final int delay;
 	
-	/** flag indicating whether the thread should still be running */
-	private boolean running = true;
 	
 	/**
 	 * Create new Sound Delay Runner.
@@ -46,7 +44,7 @@ public class SndDelayRunner extends Thread {
 	 * @param pitch		the variation in pith between recording and playback, in percent
 	 * @throws LineUnavailableException
 	 */
-	public SndDelayRunner(int delay, float pitch) throws LineUnavailableException {
+	public DelayRunner(int delay, float pitch) throws LineUnavailableException {
 		this.delay = delay;
 		
 		// initialize microphone and speaker
@@ -114,12 +112,5 @@ public class SndDelayRunner extends Thread {
 		microphone.stop();
 		loudspeaker.stop();
 		System.out.println("finished");
-	}
-	
-	/**
-	 * Set a flag so the thread stops running.
-	 */
-	public void stopRunning() {
-		this.running = false;
 	}
 }

@@ -1,13 +1,8 @@
 package de.tkuester.snddelay.ui;
 
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-
-import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
-
-import de.tkuester.snddelay.SndDelayRunner;
 
 /**
  * This class provides a very simple UI for the sound delay runner.
@@ -18,19 +13,7 @@ import de.tkuester.snddelay.SndDelayRunner;
  */
 public class SndDelayUI extends JFrame {
 
-	private static final long serialVersionUID = -3961217351765298695L;
-	
-	/** slider panel for the delay */
-	private final SliderPanel delayPanel;
-	
-	/** slider panel for pitch variation */
-	private final SliderPanel pitchPanel;
-	
-	/** button for starting and stopping the feedback */
-	private final JButton button;
-	
-	/** thread running the sound delay runnable */
-	private SndDelayRunner runner = null;
+	private static final long serialVersionUID = -8831179642357330800L;
 
 	/**
 	 * Initialize sound delay UI.
@@ -38,61 +21,12 @@ public class SndDelayUI extends JFrame {
 	public SndDelayUI() {
 		super("Sound Delay UI");
 		
-		// widgets for setting delay and pitch
-		this.delayPanel = new SliderPanel("Delay, in millis", 150, 0, 1000, 100);
-		this.pitchPanel = new SliderPanel("Pitch variation, in %", 150, 50, 200, 100);
+		JTabbedPane tabs = new JTabbedPane();
+		tabs.add("Delay", new DelayRunnerPanel());
+		tabs.add("Noise", new NoiseRunnerPanel());
 		
-		// button for starting/stopping the recording and playback
-		this.button = new JButton("Start");
-		this.button.addActionListener((ActionEvent e) -> {
-			if (runner == null) {
-				startFeedback();
-			} else {
-				stopFeedback();
-			}
-		});
-		
-		// assemble UI elements
-		this.getContentPane().setLayout(new BorderLayout());
-		this.getContentPane().add(delayPanel, BorderLayout.NORTH);
-		this.getContentPane().add(pitchPanel, BorderLayout.CENTER);
-		this.getContentPane().add(button, BorderLayout.SOUTH);
+		this.getContentPane().add(tabs);
 		this.pack();
-	}
-
-	/**
-	 * Callback for starting the delayed audio feedback.
-	 */
-	protected void startFeedback() {
-		// update UI
-		this.delayPanel.setEnabled(false);
-		this.pitchPanel.setEnabled(false);
-		this.button.setText("Stop");
-
-		try {
-			// start thread
-			int delay = this.delayPanel.getValue();
-			float pitch = this.pitchPanel.getValue() / 100.f;
-			this.runner = new SndDelayRunner(delay, pitch);
-			this.runner.start();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	/**
-	 * Callback for stopping the audio feedback.
-	 */
-	protected void stopFeedback() {
-
-		// update UI
-		this.delayPanel.setEnabled(true);
-		this.pitchPanel.setEnabled(true);
-		this.button.setText("Start");
-		
-		// stop thread
-		this.runner.stopRunning();
-		this.runner = null;
 	}
 	
 	/**

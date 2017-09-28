@@ -12,6 +12,7 @@ import Tkinter as tkinter
 import tkFileDialog as filedialog
 import picturerank
 from PIL import Image, ImageTk
+from pictureutil import auto_rotate
 
 DELIMITER = " - "
 
@@ -120,20 +121,6 @@ class PictureRankUI(tkinter.Frame):
 		return self.images[pic]
 
 
-def auto_rotate(img):
-	"""Auto-rotate image based on EXIF information; adapted from
-	http://www.lifl.fr/~damien.riquet/auto-rotating-pictures-using-pil.html
-	"""
-	try:
-		exif = img._getexif()
-		orientation_key = 274 # cf ExifTags
-		orientation = exif[orientation_key]
-		rotate_values = {3: 180, 6: 270, 8: 90}
-		img = img.rotate(rotate_values[orientation])
-	finally:
-		return img
-
-
 def main():
 	"""Parse command line parameters and run application.
 	"""
@@ -141,7 +128,7 @@ def main():
 	root = tkinter.Tk()
 
 	# parse and check command line options
-	parser = optparse.OptionParser("picturerynk_ui.py [Options] [Directory]")
+	parser = optparse.OptionParser("picturerank_ui.py [Options] [Directory]")
 	parser.add_option("-s", "--size", dest="size", 
 					  help="size of image previews")
 	(options, args) = parser.parse_args()
@@ -155,4 +142,3 @@ def main():
 	
 if __name__ == "__main__":
 	main()
-	

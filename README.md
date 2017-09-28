@@ -57,15 +57,23 @@ picking one of those, another eight similar colors, and so on, until the color
 converges to what is wanted.
 
 
-PictureRank
+PictureUtil
 -----------
-This program can be used for ranking pictures from a folder, for example when
-you have hundreds of pictures taken in your last vacation and you want to find
-a selection of the best few pictures for your album.
+This package contains a few useful utilities for managing picture collections.
+
+The first program can be used for ranking pictures from a folder, for example
+when you have hundreds of pictures taken in your last vacation and you want to
+find a selection of the best few pictures for your album.
 
 The program works by repeatedly placing two random pictures next to each other
 and having the user spontaneously decide which one is better, tournament-style.
 After a few minutes of somewhat consistent voting, the best pictures are found.
+
+Another program can be used to arrange pictures freely and to rename them
+according to their new order. While this is possible in some file manager or
+photo management software, in a surprisingly high number it is not. This can
+be useful e.g. when digitizing old scanned photos, or when merging collections
+having different file name patterns and possibly diverging camera time settings.
 
 
 QuickReader
