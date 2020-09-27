@@ -76,14 +76,6 @@ be useful e.g. when digitizing old scanned photos, or when merging collections
 having different file name patterns and possibly diverging camera time settings.
 
 
-PwdMgr
-------
-Simple Password-Manager for storing passwords in an encrypted JSON file. Requires
-PGP to be installed and set up, which is called using the gnupg library. Passwords
-are decrypted, displayed in a simpe UI, and encrypted again when something changes.
-Passwords can be tagged and annotated, sorted and filtered.
-
-
 QuickReader
 -----------
 A screen reader for quickly 'scanning' long texts by briefly flashing the single
